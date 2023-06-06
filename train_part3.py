@@ -173,7 +173,7 @@ class Trainer:
         data_trainloader = DataLoader(
           train_dataset,
           batch_size = batch_size,
-          sampler = DistributedSampler(train_dataset) if distributed_strategy == "ddp" else None,
+          sampler = DistributedSampler(train_dataset) if self.is_ddp_training else None,
           collate_fn=DataCollatorForSeq2Seq(tokenizer= tokenizer, padding= True, return_tensors='pt')
         ) ### YOUR CODE HERE ###
 
