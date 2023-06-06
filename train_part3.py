@@ -66,7 +66,7 @@ class Trainer:
             self.ctx = nullcontext()
         else:
             # TODO Otherwise, use 'torch.amp.autocast' context with the specified dtype, and initialize GradScaler if mixed_precision_dtype is float16.
-            self.ctx = torch.amp.autocast(device_type='cuda', dtype=mixed_precision_dtype)  ### YOUR CODE HERE ###
+            self.ctx = autocast(device_type='cuda', dtype=mixed_precision_dtype)  ### YOUR CODE HERE ###
             self.gradscaler = GradScaler()  ### YOUR CODE HERE ###
 
     def _set_ddp_training(self):
@@ -172,9 +172,9 @@ class Trainer:
 
         data_trainloader = DataLoader(
           train_dataset,
-          batch_size = batch_size,
+          batch_size = self.batch_size,
           sampler = DistributedSampler(train_dataset) if self.is_ddp_training else None,
-          collate_fn=DataCollatorForSeq2Seq(tokenizer= tokenizer, padding= True, return_tensors='pt')
+          collate_fn=DataCollatorForSeq2Seq(tokenizer= self.tokenizer, padding= True, return_tensors='pt')
         ) ### YOUR CODE HERE ###
 
         # TODO: Prepare the evaluation DataLoader. Initialize 'DataLoader' with 'eval_dataset',
@@ -183,9 +183,9 @@ class Trainer:
 
         data_testloader = DataLoader(
             eval_dataset,
-            batch_size = batch_size,
+            batch_size = self.batch_size,
             sampler= SequentialSampler(eval_dataset),
-            collate_fn=DataCollatorForSeq2Seq(tokenizer= tokenizer, padding= True, return_tensors='pt')
+            collate_fn=DataCollatorForSeq2Seq(tokenizer= self.tokenizer, padding= True, return_tensors='pt')
         ) ### YOUR CODE HERE ###
 
         return data_trainloader, data_testloader
